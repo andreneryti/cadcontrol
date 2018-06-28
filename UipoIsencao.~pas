@@ -1,0 +1,27 @@
+unit UipoIsencao;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UnitModeloComum, ExtCtrls, StdCtrls, WinSkinData;
+
+type
+  TfrmTipoIsencao = class(TModeloComum)
+    cbInsecao: TRadioButton;
+    cbSuperSimples: TRadioButton;
+    Bevel1: TBevel;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmTipoIsencao: TfrmTipoIsencao;
+
+implementation
+
+{$R *.dfm}
+
+end.

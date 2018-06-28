@@ -1,0 +1,30 @@
+unit UBoletoVencinento;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UnitModeloComum, ExtCtrls, StdCtrls, Mask, Buttons, WinSkinData;
+
+type
+  TfrmBoletoVencinento = class(TModeloComum)
+    BtnOK: TBitBtn;
+    BitBtn3: TBitBtn;
+    radDataVenc: TRadioButton;
+    radDataContrib: TRadioButton;
+    edDataVenc: TMaskEdit;
+    Bevel1: TBevel;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmBoletoVencinento: TfrmBoletoVencinento;
+
+implementation
+
+{$R *.dfm}
+
+end.

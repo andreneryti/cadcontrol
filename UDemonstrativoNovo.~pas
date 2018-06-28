@@ -1,0 +1,844 @@
+unit UDemonstrativoNovo;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UnitModeloComum, StdCtrls, Buttons, WinSkinData, ExtCtrls,
+  Grids, DBGrids, JvEdit, JvTypedEdit, ComCtrls, ShellApi, DB, DBClient,
+  Mask, Menus, Provider, SqlExpr, DBLocal, DBLocalS, FMTBcd;
+
+type
+  TfrmDemonstrativoNovo = class(TModeloComum)
+    BitBtn1: TBitBtn;
+    edNome: TEdit;
+    Label1: TLabel;
+    cbRepres: TCheckBox;
+    cbTipo: TComboBox;
+    Label2: TLabel;
+    Label3: TLabel;
+    edRegSocial: TDateTimePicker;
+    Label4: TLabel;
+    edCapSocial: TJvCurrencyEdit;
+    Bevel1: TBevel;
+    btCalcular: TBitBtn;
+    btImprimir: TBitBtn;
+    DBGrid1: TDBGrid;
+    Bevel2: TBevel;
+    Label5: TLabel;
+    labtotal: TLabel;
+    checOutSind: TCheckBox;
+    Label7: TLabel;
+    cbtipoContrib: TComboBox;
+    cbLocalidade: TComboBox;
+    Label8: TLabel;
+    btNovo: TBitBtn;
+    btEnviarEmail: TBitBtn;
+    editValorAlter: TJvCurrencyEdit;
+    Label6: TLabel;
+    Label9: TLabel;
+    Bevel3: TBevel;
+    Label10: TLabel;
+    btAddCap: TBitBtn;
+    DBGrid2: TDBGrid;
+    editCapAlteracao: TMaskEdit;
+    cdsCapAlters: TClientDataSet;
+    cdsCapAltersdata: TDateField;
+    cdsCapAltersvalor: TFloatField;
+    dsCapAlters: TDataSource;
+    cdsExtratoNovo: TClientDataSet;
+    cdsExtratoNovoVALORCONTRIB: TFMTBCDField;
+    cdsExtratoNovoDESCRICAO: TStringField;
+    cdsExtratoNovoTOTAL: TFMTBCDField;
+    cdsExtratoNovoMULTA: TFMTBCDField;
+    cdsExtratoNovoJUROS: TFMTBCDField;
+    cdsExtratoNovoCORRECAO: TFMTBCDField;
+    cdsExtratoNovoVENCIMENTO: TDateField;
+    cdsExtratoNovoTOTALGERAL: TFMTBCDField;
+    dsExtratoNovo: TDataSource;
+    PopupMenu1: TPopupMenu;
+    ExcluirAlteraodeCapital1: TMenuItem;
+    sdsCalcExtrato: TSQLClientDataSet;
+    sdsExtratoNovaForma: TSQLDataSet;
+    dspExtratoNovaForma: TDataSetProvider;
+    cdsExtratoNovaForma: TClientDataSet;
+    cdsExtratoNovaFormaVALORCONTRIB: TFMTBCDField;
+    cdsExtratoNovaFormaDESCRICAO: TStringField;
+    cdsExtratoNovaFormaTOTAL: TFMTBCDField;
+    cdsExtratoNovaFormaMULTA: TFMTBCDField;
+    cdsExtratoNovaFormaJUROS: TFMTBCDField;
+    cdsExtratoNovaFormaCORRECAO: TFMTBCDField;
+    cdsExtratoNovaFormaVENCIMENTO: TDateField;
+    cdsExtratoNovaFormaTOTALGERAL: TFMTBCDField;
+    procedure edCapSocialEnter(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure cbTipoSelect(Sender: TObject);
+    procedure btCalcularClick(Sender: TObject);
+    procedure copiadados(origem, destino:TClientDataSet);
+    procedure btNovoClick(Sender: TObject);
+    procedure btImprimirClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
+    procedure btEnviarEmailClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btAddCapClick(Sender: TObject);
+    procedure ExcluirAlteraodeCapital1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmDemonstrativoNovo: TfrmDemonstrativoNovo;
+
+implementation
+
+uses UDMAssociado, UFuncoes, UDMConexao, UQRExtratoRecepcao,
+  UExtratoEnvioEmail, UDmFinancas;
+
+{$R *.dfm}
+
+procedure TfrmDemonstrativoNovo.edCapSocialEnter(Sender: TObject);
+begin
+  inherited;
+  edCapSocial.SelectAll;
+end;
+
+procedure TfrmDemonstrativoNovo.BitBtn1Click(Sender: TObject);
+begin
+  inherited;
+  close;
+end;
+
+procedure TfrmDemonstrativoNovo.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+begin
+  inherited;
+ if  Tdbgrid(sender).DataSource.dataset.RecNo mod 2 = 1 then
+  begin
+    Tdbgrid(sender).Canvas.Brush.color := clwindow;
+    Tdbgrid(sender).DefaultDrawDataCell(Rect, Column.Field, State);
+  end
+  else
+  begin
+    Tdbgrid(sender).Canvas.Brush.Color := $00FFCECE;
+    Tdbgrid(sender).DefaultDrawDataCell(Rect, Column.Field, State);
+  end;
+
+  if gdselected in State then
+  begin
+    Tdbgrid(sender).Canvas.Brush.Color := clNavy;
+    Tdbgrid(sender).Canvas.Font.Color := clwhite;
+    Tdbgrid(sender).Canvas.FillRect(Rect);
+    Tdbgrid(sender).DefaultDrawDataCell(Rect, Column.Field, State);
+  end;
+
+end;
+
+procedure TfrmDemonstrativoNovo.cbTipoSelect(Sender: TObject);
+begin
+  inherited;
+  If cbTipo.ItemIndex = 0 then
+  begin
+     edCapSocial.Enabled := true;
+     edRegSocial.Enabled := true;
+
+     cbRepres.Enabled := true;
+     editValorAlter.Enabled:=true;
+     editCapAlteracao.Enabled:=true;
+     DBGrid2.Enabled:=true;
+     btAddCap.Enabled:=true;
+  end
+  else
+  If cbTipo.ItemIndex = 1 then
+  begin
+     edCapSocial.Enabled := false;
+     edRegSocial.Enabled := false;
+     edRegSocial.Date := DataAtual;
+     cbRepres.Enabled := false;
+     editValorAlter.Enabled:=False;
+     editCapAlteracao.Enabled:=False;
+     cdsCapAlters.Edit;
+     cdsCapAlters.EmptyDataSet;
+     DBGrid2.Enabled:=False;
+     btAddCap.Enabled:=false;
+  end
+
+end;
+
+procedure TfrmDemonstrativoNovo.btCalcularClick(Sender: TObject);
+var
+{  i, idextrato:integer;
+  alteracao:Integer;
+  totalgeral : Real;
+  data1, data2, dataaux:TDateTime;
+  }
+
+   idextrato, outsind, repres:integer;
+   datacap :TDateTime;
+begin
+  inherited;
+  cdsExtratoNovaForma.Open;
+  cdsExtratoNovaForma.EnableControls;
+  cdsExtratoNovaForma.EmptyDataSet;
+
+  if edNome.Text = '' then
+  begin
+      Aviso('Nome é obrigatório. ');
+      edNome.SetFocus;
+      Exit;
+  end;
+
+  if  checOutSind.checked = true then
+    outsind :=1
+  else
+    outsind :=0;
+
+  If cbRepres.Checked = true then
+     repres := 1
+  else
+     repres := 0;
+
+
+     if cbTipo.ItemIndex = 0 then
+        datacap :=  edCapSocial.value
+     else
+        datacap := DataAtual;
+
+
+  idextrato := DMConexao.GeraAutoNumber('GEN_EXTRATOS_ID',1);
+
+  if (DMConexao.ExecuteProc('PROC_EXTRATO_I',
+                              inttostr(idextrato) + ',' +
+                              quotedstr(edNome.text) + ',' +
+                              inttostr(cbTipo.ItemIndex + 1) + ',' +
+                              inttostr(cbLocalidade.ItemIndex + 1) + ',' +
+                              inttostr(cbtipoContrib.ItemIndex +1) + ',' +
+                              stringreplace(floattostr(datacap), ',', '.', [rfReplaceAll]) + ', ' +
+                              quotedstr(inttostr(ExtractYear(UltimoDia(edRegSocial.Date))) + '.' + inttostr(ExtractMonth(UltimoDia(edRegSocial.Date))) + '.' + inttostr(ExtractDay(UltimoDia(edRegSocial.Date))))  + ', ' +
+                              inttostr(outsind) + ',' +
+                              inttostr(repres) )) = 0 then
+  begin
+      Aviso('Erro gerando o Extrato. ');
+      Exit;
+  end;
+
+  if (cbTipo.ItemIndex + 1) = 1 then
+  begin
+
+      if (DMConexao.ExecuteProc('PROC_CAPSOCIALTEMP_I ',
+                              quotedstr(inttostr(ExtractYear(UltimoDia(edRegSocial.Date))) + '.' + inttostr(ExtractMonth(UltimoDia(edRegSocial.Date))) + '.' + inttostr(ExtractDay(UltimoDia(edRegSocial.Date))))  + ', ' +
+                              stringreplace(floattostr(edCapSocial.value), ',', '.', [rfReplaceAll]) + ', ' +
+                              inttostr(idextrato) )) = 0 then
+      begin
+          Aviso('Erro gerando o Extrato (Registro Social). ');
+          DMConexao.ExecSQL('delete from extratos where idextrato='+inttostr(idextrato));
+          Exit;
+      end;
+
+
+      If cdsCapAlters.Active = true then
+      begin
+          if cdsCapAlters.RecordCount > 0 then
+          begin
+            cdsCapAlters.first;
+            while not cdsCapAlters.Eof do
+            begin
+                if (DMConexao.ExecuteProc('PROC_CAPSOCIALTEMP_I ',
+                                        quotedstr(inttostr(ExtractYear(cdsCapAltersdata.value)) + '.' + inttostr(ExtractMonth(cdsCapAltersdata.value)) + '.' + inttostr(ExtractDay(cdsCapAltersdata.value)))  + ', ' +
+                                        stringreplace(floattostr(cdsCapAltersvalor.value), ',', '.', [rfReplaceAll]) + ', ' +
+                                        inttostr(idextrato) )) = 0 then
+                begin
+                    Aviso('Erro gerando o Extrato (Registro Social) ');
+                    DMConexao.ExecSQL('delete from capsocialtemp where idextrato='+inttostr(idextrato));
+                    DMConexao.ExecSQL('delete from extratos where idextrato='+inttostr(idextrato));
+                    Exit;
+                end;
+                cdsCapAlters.next;
+            end;
+          end;
+      end;
+  end;
+
+  cdsExtratoNovaForma.close;
+  cdsExtratoNovaForma.Params.ParamByName('idextrato').value := idextrato;
+  cdsExtratoNovaForma.Params.ParamByName('dataatual').value := DataAtual;
+  cdsExtratoNovaForma.open;
+
+  if cdsExtratoNovaForma.RecordCount > 0 then
+  begin
+     btImprimir.Enabled:=true;
+     If copy(DMConexao.sdsConfigNOMEEMP.value,1,1)<>'F' then
+         btEnviarEmail.Enabled:=true;
+
+     cdsExtratoNovaForma.last;
+
+     cdsExtratoNovaForma.IndexFieldNames :=  'TOTALGERAL';
+     cdsExtratoNovaForma.last;
+     labtotal.caption:= formatfloat(',0.00', cdsExtratoNovaFormaTOTALGERAL.AsFloat);
+     cdsExtratoNovaForma.IndexFieldNames :=  'VENCIMENTO';
+     cdsExtratoNovaForma.first;
+  end;
+
+
+  {
+
+  DMAssociado.cdsExtratoNovo.close;
+  For i := 0 to 7 do
+     DMAssociado.cdsExtratoNovo.Params[i].Clear;
+
+  alteracao := 0;
+  if  (cbTipo.ItemIndex = 0)  then
+  begin
+     if cdsCapAlters.Active=true then
+        if cdsCapAlters.RecordCount > 0 then
+           alteracao := 1;
+  end;
+
+  cdsExtratoNovo.Open;
+  cdsExtratoNovo.EmptyDataSet;
+
+  if alteracao = 0 then
+  begin
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('TPPESSOA').value :=  cbTipo.ItemIndex + 1;
+
+        if cbTipo.ItemIndex = 0 then
+        begin
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('CAPSOCIAL').value := edCapSocial.value;
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('REGSOCIAL').value := UltimoDia(edRegSocial.Date);
+           If cbRepres.Checked = true then
+              DMAssociado.cdsExtratoNovo.Params.ParamByName('REPRESENT').value := 1
+           else
+              DMAssociado.cdsExtratoNovo.Params.ParamByName('REPRESENT').value := 0;
+        end
+        else
+        begin
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('CAPSOCIAL').value := 0;
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('REGSOCIAL').value := Dataatual;
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('REPRESENT').value := 1;
+        end;
+
+        if  checOutSind.checked = true then
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('OUTSINDIC').value :=1
+        else
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('OUTSINDIC').value :=0;
+
+
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('TIPOCONTRIB').value := cbtipoContrib.ItemIndex +1;
+
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('DATAATUAL').value := Dataatual;
+
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('EMP_ID').value := cbLocalidade.ItemIndex + 1;
+
+        DMAssociado.cdsExtratoNovo.Open;
+
+        copiadados(DMAssociado.cdsExtratoNovo, cdsExtratoNovo);
+
+        if DMAssociado.cdsExtratoNovo.RecordCount > 0 then
+        begin
+           btImprimir.Enabled:=true;
+           If copy(DMConexao.sdsConfigNOMEEMP.value,1,1)<>'F' then
+               btEnviarEmail.Enabled:=true;
+
+           DMAssociado.cdsExtratoNovo.last;
+
+           DMAssociado.cdsExtratoNovo.IndexFieldNames :=  'TOTALGERAL';
+           DMAssociado.cdsExtratoNovo.last;
+           labtotal.caption:= formatfloat(',0.00', DMAssociado.cdsExtratoNovoTOTALGERAL.AsFloat);
+           DMAssociado.cdsExtratoNovo.IndexFieldNames :=  'VENCIMENTO';
+           DMAssociado.cdsExtratoNovo.first;
+        end;
+  end
+  else
+  if alteracao = 1 then
+  begin
+        totalgeral :=0;
+
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('TPPESSOA').value :=  cbTipo.ItemIndex + 1;
+
+        If cbRepres.Checked = true then
+              DMAssociado.cdsExtratoNovo.Params.ParamByName('REPRESENT').value := 1
+           else
+              DMAssociado.cdsExtratoNovo.Params.ParamByName('REPRESENT').value := 0;
+        if  checOutSind.checked = true then
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('OUTSINDIC').value :=1
+        else
+           DMAssociado.cdsExtratoNovo.Params.ParamByName('OUTSINDIC').value :=0;
+
+
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('TIPOCONTRIB').value := cbtipoContrib.ItemIndex +1;
+
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('EMP_ID').value := cbLocalidade.ItemIndex + 1;
+
+        data1 := UltimoDia(edRegSocial.Date);
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('CAPSOCIAL').value  := edCapSocial.value;
+        
+        cdsCapAlters.First;
+        while not cdsCapAlters.eof do
+        begin
+              if  StrToDate('31/12/'+  IntToStr(ExtractYear(cdsCapAltersdata.value)) ) > Dataatual then
+                  data2 := DataAtual
+              else
+                  data2 := StrToDate('31/12/'+  IntToStr(ExtractYear(cdsCapAltersdata.value)) );
+
+              DMAssociado.cdsExtratoNovo.Params.ParamByName('REGSOCIAL').value := data1;
+              DMAssociado.cdsExtratoNovo.Params.ParamByName('DATAATUAL').value := data2;
+              DMAssociado.cdsExtratoNovo.Open;
+
+              cdsExtratoNovo.Open;
+              copiadados(DMAssociado.cdsExtratoNovo, cdsExtratoNovo);
+
+              if DMAssociado.cdsExtratoNovo.RecordCount > 0 then
+              begin
+                 btImprimir.Enabled:=true;
+                 If copy(DMConexao.sdsConfigNOMEEMP.value,1,1)<>'F' then
+                     btEnviarEmail.Enabled:=true;
+
+                 DMAssociado.cdsExtratoNovo.last;
+
+                 DMAssociado.cdsExtratoNovo.IndexFieldNames :=  'TOTALGERAL';
+                 DMAssociado.cdsExtratoNovo.last;
+                 totalgeral := totalgeral +DMAssociado.cdsExtratoNovoTOTALGERAL.AsFloat;
+              end;
+
+              cdsCapAlters.next;
+
+              data1 := IncDay(data2,1);
+              DMAssociado.cdsExtratoNovo.close;
+              DMAssociado.cdsExtratoNovo.Params.ParamByName('CAPSOCIAL').value  :=cdsCapAltersvalor.value;
+
+        end;
+
+        if  StrToDate('31/12/'+  IntToStr(ExtractYear(cdsCapAltersdata.value)) ) > Dataatual then
+            data2 := DataAtual
+        else
+            data2 := StrToDate('31/12/'+  IntToStr(ExtractYear(cdsCapAltersdata.value)) );
+
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('REGSOCIAL').value := data1;
+        DMAssociado.cdsExtratoNovo.Params.ParamByName('DATAATUAL').value := DataAtual;
+        DMAssociado.cdsExtratoNovo.Open;
+
+        cdsExtratoNovo.Open;
+        copiadados(DMAssociado.cdsExtratoNovo, cdsExtratoNovo);
+
+        if DMAssociado.cdsExtratoNovo.RecordCount > 0 then
+        begin
+           btImprimir.Enabled:=true;
+           If copy(DMConexao.sdsConfigNOMEEMP.value,1,1)<>'F' then
+               btEnviarEmail.Enabled:=true;
+
+           DMAssociado.cdsExtratoNovo.last;
+
+           DMAssociado.cdsExtratoNovo.IndexFieldNames :=  'TOTALGERAL';
+           DMAssociado.cdsExtratoNovo.last;
+           totalgeral := totalgeral +DMAssociado.cdsExtratoNovoTOTALGERAL.AsFloat;
+        end;
+
+        labtotal.caption:= formatfloat(',0.00',totalgeral);
+        cdsExtratoNovo.IndexFieldNames :=  'VENCIMENTO';
+        DMAssociado.cdsExtratoNovo.IndexFieldNames :=  'VENCIMENTO';
+        DMAssociado.cdsExtratoNovo.first;
+
+  end;
+      }
+
+
+end;
+
+procedure TfrmDemonstrativoNovo.btNovoClick(Sender: TObject);
+begin
+  inherited;
+  DMAssociado.cdsExtratoNovo.close;
+  cdsExtratoNovaForma.Open;
+  cdsExtratoNovaForma.EmptyDataSet;
+  cdsCapAlters.Open;
+  cdsCapAlters.EmptyDataSet;
+  edNome.Clear;
+  cbLocalidade.ItemIndex := 0;
+  cbtipoContrib.ItemIndex := 0;
+  cbTipo.ItemIndex := 0;
+  edCapSocial.Value := 1;
+  edRegSocial.date := dataatual;
+  cbRepres.Checked:=true;
+  checOutSind.Checked := false;
+  btImprimir.Enabled:=false;
+  btEnviarEmail.Enabled:=false;
+  labtotal.caption := '0,00';
+  editValorAlter.Value :=0;
+  editCapAlteracao.Clear;
+  
+end;
+
+procedure TfrmDemonstrativoNovo.btImprimirClick(Sender: TObject);
+var
+  validade:TDateTime;
+  total, totsind, totconf:Real;
+begin
+  inherited;
+  If dsExtratoNovo.dataset.active = true then
+     If dsExtratoNovo.dataset.RecordCount > 0 then
+     begin
+         DMAssociado.cdsExtratoNovo.Open;
+         DMAssociado.cdsExtratoNovo.EmptyDataSet;
+         copiadados(cdsExtratoNovaForma, DMAssociado.cdsExtratoNovo);
+         Try
+            Application.createform(TQRExtratoRecepcao,QRExtratoRecepcao);
+            QRExtratoRecepcao.labtitulo.caption := cbtipoContrib.Text + ' - ' + QRExtratoRecepcao.labtitulo.caption;
+            QRExtratoRecepcao.labNome.Caption := ednome.Text;
+            QRExtratoRecepcao.labLocalidade.caption := cbLocalidade.text;
+            QRExtratoRecepcao.labTpPessoa.Caption:= cbTipo.Text;
+            If cbTipo.ItemIndex = 0 then
+            begin
+                QRExtratoRecepcao.labRegSocial.caption:= datetostr(edRegSocial.date);
+                QRExtratoRecepcao.labCapSocial.caption:= 'R$ ' + Formatfloat(',0.00',edCapSocial.Value);
+                If cbRepres.Checked = true then
+                   QRExtratoRecepcao.labRepres.caption:= 'Sim'
+                else
+                   QRExtratoRecepcao.labRepres.caption:= 'Não';
+            end
+            else
+            begin
+                QRExtratoRecepcao.labRegSocial.caption:= '----------';
+                QRExtratoRecepcao.labCapSocial.caption:= '----------';
+                QRExtratoRecepcao.labRepres.caption:='----------';
+            end;
+
+            If checOutSind.Checked = true then
+               QRExtratoRecepcao.labOutSind.caption:= 'Sim'
+            else
+               QRExtratoRecepcao.labOutSind.caption:= 'Não';
+
+            DMAssociado.sdsEmpresa.close;
+            DMAssociado.sdsEmpresa.ParamByName('emp_id').value := cbLocalidade.ItemIndex +1;
+            DMAssociado.sdsEmpresa.Open;
+
+            QRExtratoRecepcao.labEmpresa.caption := DMAssociado.sdsEmpresaNOMEEMP.value;
+           // validade := EncodeDate(ExtractYear(DataAtual),ExtractMonth(DataAtual),extractday(UltimoDia(DataAtual)));
+           validade := DataAtual;
+            QRExtratoRecepcao.labValidade.caption := Datetostr(validade)+'.';
+
+            total :=0;
+            totsind :=0;
+            totconf:=0;
+            DMAssociado.cdsExtratoNovo.DisableControls;
+            DMAssociado.cdsExtratoNovo.first;
+            while not DMAssociado.cdsExtratoNovo.eof do
+            begin
+                 total := total + DMAssociado.cdsExtratoNovoTOTAL.asfloat;
+                 If Pos('Sindical',DMAssociado.cdsExtratoNovoDESCRICAO.Value) > 0 then
+                    totsind := totsind + DMAssociado.cdsExtratoNovoTOTAL.AsFloat
+                 else
+                 If Pos('Confederativa',DMAssociado.cdsExtratoNovoDESCRICAO.Value) > 0 then
+                    totconf := totconf + DMAssociado.cdsExtratoNovoTOTAL.AsFloat;
+                 DMAssociado.cdsExtratoNovo.Next;
+            end;
+
+
+            DMAssociado.cdsExtratoNovo.EnableConstraints;
+            DMAssociado.cdsExtratoNovo.First;
+
+
+            QRExtratoRecepcao.labtotal.Caption := 'R$ ' + FormatFloat(',0.00', total);
+            QRExtratoRecepcao.labtotalSind.Caption := 'R$ ' + FormatFloat(',0.00', totsind);
+            QRExtratoRecepcao.labtotalConf.Caption := 'R$ ' + FormatFloat(',0.00', totconf);
+
+            if Confirma('Imprimir apenas os totais?') then
+            begin
+                QRExtratoRecepcao.labValorTitulo.Caption :='';
+                QRExtratoRecepcao.labJurosTitulo.Caption :='';
+                QRExtratoRecepcao.labMultaTitulo.Caption :='';
+                QRExtratoRecepcao.labCorrecaoTitulo.Caption :='';
+                QRExtratoRecepcao.labvalor.DataField:='';
+                QRExtratoRecepcao.labjuros.DataField:='';
+                QRExtratoRecepcao.labcorrecao.DataField:='';
+                QRExtratoRecepcao.labMulta.DataField:='';
+            end;
+
+            QRExtratoRecepcao.preview;
+         finally
+            QRExtratoRecepcao.free;
+         end;
+
+     end;
+end;
+
+procedure TfrmDemonstrativoNovo.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  inherited;
+  DMAssociado.cdsExtratoNovo.close;
+end;
+
+procedure TfrmDemonstrativoNovo.FormShow(Sender: TObject);
+begin
+  inherited;
+  edRegSocial.date := dataatual;
+  btImprimir.Enabled:=false;
+  btEnviarEmail.Enabled:=false;
+  editValorAlter.Value :=0;
+end;
+
+procedure TfrmDemonstrativoNovo.btEnviarEmailClick(Sender: TObject);
+var
+  validade:TDateTime;
+  olObjeto: OleVariant;
+  caminho :string;
+  pasta :string;
+  novoarquivo:String;
+begin
+  inherited;
+  If dsExtratoNovo.dataset.active = true then
+     If dsExtratoNovo.dataset.RecordCount > 0 then
+     begin
+         DMAssociado.cdsExtratoNovo.Open;
+         DMAssociado.cdsExtratoNovo.EmptyDataSet;
+         copiadados(cdsExtratoNovaForma, DMAssociado.cdsExtratoNovo);
+
+         try application.createform(TfrmExtratoEnviarEmail,frmExtratoEnviarEmail);
+         frmExtratoEnviarEmail.Memomsg.clear;
+         frmExtratoEnviarEmail.Memomsg.lines.add('Aos cuidados de ' + ednome.text+'.');
+         frmExtratoEnviarEmail.Memomsg.lines.add('');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Prezado Senhor(a),');
+         frmExtratoEnviarEmail.Memomsg.lines.add('');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Como solicitado, segue abaixo a relação de documentos necessários para cadastro');
+         frmExtratoEnviarEmail.Memomsg.lines.add('inicial e em anexo a simulação de valores.');
+         frmExtratoEnviarEmail.Memomsg.lines.add('');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Pessoa Física / Responsável Técnico:');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- RG');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- CPF');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- Comprovante de Residência');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- 2 telefones');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- E-mail');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- Estado civil');
+         frmExtratoEnviarEmail.Memomsg.lines.add('');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Pessoa Jurídica:');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- Contrato Social + Alterações (se houver)');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- Requerimento de Empresário Individual');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- Cartão CNPJ');
+         frmExtratoEnviarEmail.Memomsg.lines.add('- Alvará (se tiver)');
+         frmExtratoEnviarEmail.Memomsg.lines.add('');
+         frmExtratoEnviarEmail.Memomsg.lines.add('* Atenção à data de validade dos valores contida no documento anexo.');
+         frmExtratoEnviarEmail.Memomsg.lines.add('');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Atenciosamente,');
+         frmExtratoEnviarEmail.Memomsg.lines.add('');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Sindicato do Representantes Comerciais do Rio de Janeiro');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Site: www.sircomrj.com.br');
+         frmExtratoEnviarEmail.Memomsg.lines.add('E-mail: sindicato@sircomrj.com.br');
+         frmExtratoEnviarEmail.Memomsg.lines.add('Endereço: Av. Graça Aranha, 416, sl. 425, Castelo - Rio de Janeiro,');
+         frmExtratoEnviarEmail.Memomsg.lines.add('CEP 24.020-320, Tel: (21) 2524-2859 / (21) 2210-1838');
+
+         if frmExtratoEnviarEmail.showmodal = mrok then
+         begin
+             Try
+                Application.createform(TQRExtratoRecepcao,QRExtratoRecepcao);
+                QRExtratoRecepcao.labtitulo.caption := cbtipoContrib.Text + ' - ' + QRExtratoRecepcao.labtitulo.caption;
+                QRExtratoRecepcao.labNome.Caption := ednome.Text;
+                QRExtratoRecepcao.labLocalidade.caption := cbLocalidade.text;
+                QRExtratoRecepcao.labTpPessoa.Caption:= cbTipo.Text;
+                If cbTipo.ItemIndex = 0 then
+                begin
+                    QRExtratoRecepcao.labRegSocial.caption:= datetostr(edRegSocial.date);
+                    QRExtratoRecepcao.labCapSocial.caption:= 'R$ ' + Formatfloat(',0.00',edCapSocial.Value);
+                    If cbRepres.Checked = true then
+                       QRExtratoRecepcao.labRepres.caption:= 'Sim'
+                    else
+                       QRExtratoRecepcao.labRepres.caption:= 'Não';
+                end
+                else
+                begin
+                    QRExtratoRecepcao.labRegSocial.caption:= '----------';
+                    QRExtratoRecepcao.labCapSocial.caption:= '----------';
+                   QRExtratoRecepcao.labRepres.caption:='----------';
+                end;
+
+                If checOutSind.Checked = true then
+                   QRExtratoRecepcao.labOutSind.caption:= 'Sim'
+                else
+                   QRExtratoRecepcao.labOutSind.caption:= 'Não';
+
+                DMAssociado.sdsEmpresa.close;
+                DMAssociado.sdsEmpresa.ParamByName('emp_id').value := cbLocalidade.ItemIndex +1;
+                DMAssociado.sdsEmpresa.Open;
+
+                QRExtratoRecepcao.labEmpresa.caption := DMAssociado.sdsEmpresaNOMEEMP.value;
+               // validade := EncodeDate(ExtractYear(DataAtual),ExtractMonth(DataAtual),extractday(UltimoDia(DataAtual)));
+               validade := DataAtual;
+                QRExtratoRecepcao.labValidade.caption := Datetostr(validade)+'.';
+
+                QRExtratoRecepcao.labtotal.Caption :='Total: R$ '+ labtotal.caption;
+
+                if Confirma('Extrato apenas com os totais?') then
+                begin
+                    QRExtratoRecepcao.labValorTitulo.Caption :='';
+                    QRExtratoRecepcao.labJurosTitulo.Caption :='';
+                    QRExtratoRecepcao.labMultaTitulo.Caption :='';
+                    QRExtratoRecepcao.labCorrecaoTitulo.Caption :='';
+                    QRExtratoRecepcao.labvalor.DataField:='';
+                    QRExtratoRecepcao.labjuros.DataField:='';
+                    QRExtratoRecepcao.labcorrecao.DataField:='';
+                    QRExtratoRecepcao.labMulta.DataField:='';
+                end;
+
+
+                caminho := ExtractFilePath(Application.ExeName) +'email';
+
+                DMAssociado.sdsNovoGenEmail.open;
+                pasta := DMAssociado.sdsNovoGenEmailNOVO.value ;
+                DMAssociado.sdsNovoGenEmail.close;
+
+                try
+                  CreateDir(caminho+'\'+pasta);
+                except
+                  Aviso('Usuário sem permissão de acesso ao disco. ');
+                  exit;
+                end;
+
+                DMAssociado.sdsNovoGenArquivo.open;
+
+                novoarquivo :=  inttostr(ExtractYear(DataAtual))+'_'+DMAssociado.sdsNovoGenArquivoNOVO.value;
+                DMAssociado.sdsNovoGenArquivo.close;
+                                                      
+                ExibeAguarde('Preparando e-mail. Por favor aguarde...');
+
+                try
+                if gerarPDF(QRExtratoRecepcao,caminho+'\'+pasta,'Extrato_'+novoarquivo+ '.pdf') = 0 then
+                begin
+                    Aviso('Erro ao gerar arquivo PDF a ser enviado. ');
+                    Exit;
+                end;
+                except
+                   Aviso('Erro ao gerar PDF. ');
+                   exit;
+                end;
+
+                Sleep(3000);
+                try
+
+                EscondeAguarde;
+
+
+                ExibeAguarde('Enviando e-mail. Por favor aguarde...');
+               // if EnviarEmail(frmExtratoEnviarEmail.edPARA.text,frmExtratoEnviarEmail.edAssunto.text,RICH_HTML(frmExtratoEnviarEmail.Memomsg),ArquivosDIr(caminho+'\'+pasta)) = 1 then
+                if EnviarEmail(frmExtratoEnviarEmail.edPARA.text,frmExtratoEnviarEmail.edAssunto.text,RICH_HTML(frmExtratoEnviarEmail.Memomsg),'') = 1 then
+                begin
+                   EscondeAguarde;
+
+                   Aviso('E-mail enviado com sucesso.');
+
+                end
+                else
+                begin
+                   EscondeAguarde;
+
+                   Aviso('Erro ao enviar e-mail. ');
+                   exit;
+
+
+                end
+                except
+                   EscondeAguarde;
+
+                   Aviso('Erro ao enviar e-mail. ');
+                   exit;
+                end;
+
+             finally
+                QRExtratoRecepcao.free;
+             end;
+
+         end;
+         finally
+         frmExtratoEnviarEmail.free;
+         end;
+
+     end;
+end;
+
+procedure TfrmDemonstrativoNovo.FormCreate(Sender: TObject);
+begin
+  inherited;
+  cdsCapAlters.Createdataset;
+  cdsExtratoNovo.Createdataset;
+end;
+
+procedure TfrmDemonstrativoNovo.btAddCapClick(Sender: TObject);
+begin
+  inherited;
+   if editValorAlter.Value = 0 then
+   begin
+       Aviso('Valor do Capital não pode ser zero. ');
+       editValorAlter.SetFocus;
+       Exit;
+   end;
+
+   try
+      StrToDate(editCapAlteracao.Text);
+   except
+       Aviso('Data da alteração de Capital inválida. ');
+       editCapAlteracao.SetFocus;
+       Exit;
+   end;
+
+   if  StrToDate(editCapAlteracao.Text) > DataAtual then
+   begin
+       Aviso('Data da alteração de Capital maior que a data atual. ');
+       editCapAlteracao.SetFocus;
+       Exit;
+   end;
+
+   If cdsCapAlters.Active = True then
+   begin
+      if cdsCapAlters.Locate('data', strtodate(editCapAlteracao.Text),[]) then
+      begin
+         Aviso('Já existe uma alteração de Capital com esta Data. ');
+         editCapAlteracao.SetFocus;
+         Exit;
+      end;
+   end;
+
+   cdsCapAlters.Open;
+   cdsCapAlters.append;
+   cdsCapAlters.Edit;
+   cdsCapAltersdata.Value := StrToDate(editCapAlteracao.text);
+   cdsCapAltersvalor.Value := editValorAlter.Value;
+   cdsCapAlters.Open;
+   cdsCapAlters.IndexFieldNames := 'data';
+
+   editCapAlteracao.Clear;
+   editValorAlter.value :=0;
+
+end;
+
+procedure TfrmDemonstrativoNovo.ExcluirAlteraodeCapital1Click(
+  Sender: TObject);
+begin
+  inherited;
+  if cdsCapAlters.Active = True then
+    if cdsCapAlters.RecordCount >0 then
+    begin
+        cdsCapAlters.Edit;
+        cdsCapAlters.Delete;
+    end;
+end;
+
+procedure TfrmDemonstrativoNovo.copiadados(origem, destino:TClientDataSet);
+var
+    i:Integer;
+begin
+  Origem.First;
+  while not Origem.eof  do
+  begin
+    Destino.Append;
+    Destino.Edit;
+    for i := 0 to Origem.FieldCount - 1 do
+       Destino.fieldbyname(Origem.fields[i].FieldName).value := Origem.fieldbyname(Origem.fields[i].FieldName).value;
+    Destino.post;
+    Origem.Next;
+  end;
+end;
+
+end.

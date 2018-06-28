@@ -1,0 +1,24 @@
+unit UfrmRelatorio;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UnitModeloComum, WinSkinData, ExtCtrls;
+
+type
+  TfrmRelatorio = class(TModeloComum)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRelatorio: TfrmRelatorio;
+
+implementation
+
+{$R *.dfm}
+
+end.

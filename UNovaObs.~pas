@@ -1,0 +1,61 @@
+unit UNovaObs;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UnitModeloInserir, WinSkinData, StdCtrls, Buttons, ExtCtrls,
+  ComCtrls, Mask;
+
+type
+  TfrmNovaObs = class(TModeloInserir)
+    Label1: TLabel;
+    Label2: TLabel;
+    memoObs: TMemo;
+    Label3: TLabel;
+    edHora: TMaskEdit;
+    Timer1: TTimer;
+    dtpDataObs: TMaskEdit;
+    procedure btGravarClick(Sender: TObject);
+    procedure Editar(hability:boolean);
+    procedure Timer1Timer(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmNovaObs: TfrmNovaObs;
+
+implementation
+
+uses UFuncoes;
+
+{$R *.dfm}
+
+procedure TfrmNovaObs.btGravarClick(Sender: TObject);
+begin
+  inherited;
+  If memoObs.Lines.text='' then
+  begin
+     Aviso('Campo observação nao pode ser vazio. ');
+     modalresult:= mrnone;
+  end;
+end;
+
+procedure TfrmNovaObs.Editar(hability: boolean);
+begin
+   dtpDataObs.ReadOnly:=not hability;
+   edhora.readonly:=not hability;
+   memoObs.readonly:=not hability;
+   btGravar.Enabled:=hability;
+end;
+
+procedure TfrmNovaObs.Timer1Timer(Sender: TObject);
+begin
+  inherited;
+  edHora.Text:=timetostr(now);
+end;
+
+end.

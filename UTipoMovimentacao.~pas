@@ -1,0 +1,52 @@
+unit UTipoMovimentacao;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UnitModeloComum, WinSkinData, ExtCtrls, StdCtrls, Buttons,
+  Grids, DBGrids;
+
+type
+  TfrmTipoMovimentacao = class(TModeloComum)
+    Panel2: TPanel;
+    spNovo: TSpeedButton;
+    spEditar: TSpeedButton;
+    spExcluir: TSpeedButton;
+    DBGrid1: TDBGrid;
+    btSair: TBitBtn;
+    procedure spNovoClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmTipoMovimentacao: TfrmTipoMovimentacao;
+
+implementation
+
+uses UDMGeral;
+
+{$R *.dfm}
+
+procedure TfrmTipoMovimentacao.spNovoClick(Sender: TObject);
+begin
+  inherited;
+  Try Application.CreateForm(TfrmValorContribNovo,frmValorContribNovo);
+  if frmValorContribNovo.showmodal = mrok then
+  begin
+      DMGeral.PROC_TPMOVIMENTO_UI.close;
+      DMGeral.PROC_TPMOVIMENTO_UI.ParamByName('VALOR_CONTRIB_ID').value :=0;
+      DMGeral.PROC_TPMOVIMENTO_UI.ParamByName('TP_ASSOC_ID').value :=frmValorContribNovo.cdsTp_PessoaTP_ASSOC_ID.value;
+      DMGeral.PROC_TPMOVIMENTO_UI.ExecProc;
+      DMGeral.dsTipoMovimento.Dataset.refresh;
+  end;
+  finally
+  frmValorContribNovo.free;
+  end;
+
+end;
+
+end.

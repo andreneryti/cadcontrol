@@ -1,0 +1,92 @@
+program CadSind;
+
+uses
+  Forms,
+  UPrincipal in 'UPrincipal.pas' {frmPrincipal},
+  UFuncoes in 'UFuncoes.pas',
+  UDMConexao in 'UDMConexao.pas' {DMConexao: TDataModule},
+  UnitModeloLoc in 'UnitModeloLoc.pas' {ModeloLocalizar},
+  UnitModeloInserir in 'UnitModeloInserir.pas' {ModeloInserir},
+  UnitLocAssoc in 'UnitLocAssoc.pas' {frmLocAssoc},
+  UNovoAssoc in 'UNovoAssoc.pas' {frmNovoAssoc},
+  UDMAssociado in 'UDMAssociado.pas' {DMAssociado: TDataModule},
+  UnitModeloComum in 'UnitModeloComum.pas' {ModeloComum},
+  UNovoAssocInicial in 'UNovoAssocInicial.pas' {frmNovoAssocInicial},
+  captura in 'captura.pas' {frmCaptura},
+  Camera in 'Camera.pas',
+  AviCaptura in 'AviCaptura.pas',
+  UNovaObs in 'UNovaObs.pas' {frmNovaObs},
+  UnitModeloRelatorio in 'UnitModeloRelatorio.pas' {ModeloRelatorio: TQuickRep},
+  UQR_OBS in 'UQR_OBS.pas' {QR_OBS: TQuickRep},
+  UNovoEnder in 'UNovoEnder.pas' {frmNovoEnder},
+  UNovoContato in 'UNovoContato.pas' {frmNovoContato},
+  UNovaCorresp in 'UNovaCorresp.pas' {frmNovaCorresp: Unit1},
+  UNovoRelacionamento in 'UNovoRelacionamento.pas' {frmNovoRelacionamento},
+  UBuscaAssoc in 'UBuscaAssoc.pas' {frmBuscaAssoc},
+  UNovoCapSocial in 'UNovoCapSocial.pas' {frmNovoCapSocial},
+  UNovoSegmento in 'UNovoSegmento.pas' {frmNovoSegmento},
+  UNovoAssocSindic in 'UNovoAssocSindic.pas' {frmNovoAssocSindic},
+  USindicatoAdd in 'USindicatoAdd.pas' {frmSindicatoAdd},
+  UDocsEntregueEditar in 'UDocsEntregueEditar.pas' {frmDocsEntregueEditar},
+  UNovoAnexo in 'UNovoAnexo.pas' {frmNovoAnexo},
+  UNovaMovimentacao in 'UNovaMovimentacao.pas' {frmNovaMovimentacao},
+  UQR_Movimentacao in 'UQR_Movimentacao.pas' {QR_Movimentacao: TQuickRep},
+  UDmFinancas in 'UDmFinancas.pas' {DmFinancas: TDataModule},
+  UGerarPrevisao in 'UGerarPrevisao.pas' {frmGerarPrevisao},
+  UBoleto in 'UBoleto.pas' {frmBoleto},
+  UDmBoleto in 'UDmBoleto.pas' {DmBoleto: TDataModule},
+  UBoletoVencimento in 'UBoletoVencimento.pas' {frmBoletoVencimento},
+  gbCobranca in 'gbCobranca.pas',
+  gbCob104 in 'gbCob104.pas',
+  UBoletoOpcoes in 'UBoletoOpcoes.pas' {frmBoletoOpcoes},
+  uImp_GRCS in 'uImp_GRCS.pas' {Imp_GRCS: TQuickRep},
+  Guias in 'Guias.pas',
+  uGuias in 'uGuias.pas',
+  UPrintOpcoes in 'UPrintOpcoes.pas' {frmPrintOpcoes},
+  UExtratoOpcoes in 'UExtratoOpcoes.pas' {frmExtratoOpcoes},
+  UQRExtrato in 'UQRExtrato.pas' {QRExtrato: TQuickRep},
+  UPrescricao in 'UPrescricao.pas' {frmPrescricao},
+  UDemonstrativo in 'UDemonstrativo.pas' {frmDemonstrativo},
+  UQRExtratoRecepcao in 'UQRExtratoRecepcao.pas' {QRExtratoRecepcao: TQuickRep},
+  UParcelamentoContribs in 'UParcelamentoContribs.pas' {frmParcelamentoContribs},
+  UParcelamentoNovoOpcoes in 'UParcelamentoNovoOpcoes.pas' {frmParcelamentoNovoOpcoes},
+  UManutAnuidades in 'UManutAnuidades.pas' {frmManutAnuidades},
+  gbBoleto_A4SIGCB_new in 'gbBoleto_A4SIGCB_new.pas' {Boleto_A4SIGCB: TQuickRep},
+  UManutAnuidadesRegPagto in 'UManutAnuidadesRegPagto.pas' {frmManutAnuidadesRegPagto},
+  UManutParcelamento in 'UManutParcelamento.pas' {frmManutParcelamento},
+  UAlterDadosBasicos in 'UAlterDadosBasicos.pas' {frmAlterDadosBasicos},
+  UDatadoSistema in 'UDatadoSistema.pas' {frmDatadoSistema},
+  UIndices in 'UIndices.pas' {frmIndices},
+  UDMGeral in 'UDMGeral.pas' {DMGeral: TDataModule},
+  UIndiceNovo in 'UIndiceNovo.pas' {frmIndiceNovo},
+  UContribuicaoValores in 'UContribuicaoValores.pas' {frmContribuicaoValores},
+  UTiposDocumento in 'UTiposDocumento.pas' {frmTiposDocumento},
+  UTiposContato in 'UTiposContato.pas' {frmTiposContato},
+  UTiposCorrespondencia in 'UTiposCorrespondencia.pas' {frmTiposCorrespondencia},
+  USituacaoCorresp in 'USituacaoCorresp.pas' {frmSituacaoCorresp},
+  UTipoMovimentacao in 'UTipoMovimentacao.pas' {frmTipoMovimentacao},
+  UBoletoRecibo in 'UBoletoRecibo.pas' {frmBoletoRecibo},
+  UfrmRelatorio in 'UfrmRelatorio.pas' {frmRelatorio},
+  UTipoContato in 'UTipoContato.pas' {frmTipoContato},
+  UValorContribNovo in 'UValorContribNovo.pas' {frmValorContribNovo},
+  UTipoMovimentoNovo in 'UTipoMovimentoNovo.pas' {frmTipoMovimentoNovo},
+  UQRSituacaoBoletosImpressao in 'UQRSituacaoBoletosImpressao.pas' {QRSituacaoBoletosImpressao: TQuickRep},
+  URetorno in 'URetorno.pas' {frmRetorno};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.Title := 'CADSIND - Sistema de Cadatro do Sindicato';
+  Application.CreateForm(TDMConexao, DMConexao);
+  Application.CreateForm(TDMAssociado, DMAssociado);
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TModeloLocalizar, ModeloLocalizar);
+  Application.CreateForm(TModeloInserir, ModeloInserir);
+  Application.CreateForm(TModeloComum, ModeloComum);
+  Application.CreateForm(TDmFinancas, DmFinancas);
+  Application.CreateForm(TDmBoleto, DmBoleto);
+  Application.CreateForm(TDMGeral, DMGeral);
+  Application.CreateForm(TfrmRetorno, frmRetorno);
+  Application.Run;
+end.

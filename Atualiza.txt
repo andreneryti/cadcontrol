@@ -1,0 +1,129 @@
+
+
+- dar permissãoe m Filiados em Dia
+
+-
+SET TERM ^ ;
+
+CREATE OR ALTER PROCEDURE PROC_RELAT_ASSOC_EMDIA (
+    emp_id_par integer,
+    tipoassoc integer)
+returns (
+    ass_id integer,
+    registro varchar(20),
+    nome varchar(100),
+    emp_id integer,
+    regiao varchar(20),
+    cpfcnpj varchar(20),
+    end_id integer,
+    end_logradouro varchar(60),
+    end_numero varchar(6),
+    end_complemento varchar(40),
+    end_bairro varchar(40),
+    end_cep varchar(8),
+    cidade_id integer,
+    tp_ender_id integer,
+    end_corresp smallint,
+    end_corresp_dev smallint,
+    statuscorresp varchar(40),
+    cidade_nome varchar(60),
+    estado_nome varchar(60),
+    tp_ender_descr varchar(40),
+    ender_completo varchar(300),
+    tp_assoc_id integer)
+as
+declare variable strsql varchar(25000);
+begin
+   /* FILTRO 1 "ENTRE ANOINI E ANOFIM"
+             0: QUEM NÃO DEVE NADA
+             1: QUEM NÃO DEVE NADA SEM PARCELAMENTO
+             2: QUEM NÃO DEVE NADA COM PARCELAMENTO
+             3: QUEM NÃO DEVE NADA COM PARCELAMENTO EM DIA
+             4: QUEM NÃO DEVE NADA COM PARCELAMENTO EM ATRASO
+
+    * FILTRO 2 "ALGO ANTERIOR EM ABERTO
+             0: NÃO
+             1: SIM
+
+
+
+    */
+
+
+    strsql = ' select a.ass_id, udf_copy(a.registro,1,7)||''/''||udf_copy(a.registro,8,4) registro, a.nome, a.cpfcnpj, a.emp_id, c.regiao, a.tp_assoc_id  from associado a, config c ';
+    strsql = :strsql ||'   where c.emp_id = a.emp_id ';
+    strsql = :strsql ||'   and  c.emp_id = ' ||cast(:emp_id_par as varchar(2));
+    strsql = :strsql ||'  and  a.tp_status_id<>2 ';
+
+    if (:tipoassoc is not null) then
+    begin
+       strsql = :strsql ||'   and a.tp_assoc_id  = ' ||cast(:tipoassoc as varchar(1));
+    end
+
+    strsql = :strsql ||' order by a.ass_id desc';
+
+    for
+    execute statement :strsql
+    --  select a.ass_id, udf_copy(a.registro,1,7)||''/''||udf_copy(a.registro,8,4) registro, a.nome, a.cpfcnpj, a.emp_id, c.regiao, a.tp_assoc_id  from associado a  inner join config c on c.emp_id = a.emp_id
+    into :ass_id, :registro, :nome, :cpfcnpj, :emp_id, :regiao, :tp_assoc_id
+    do begin
+
+           if (udf_len(:cpfcnpj)=11) then
+               cpfcnpj = cpf_formatar(:cpfcnpj);
+            else
+            if (udf_len(:cpfcnpj)=14) then
+               cpfcnpj = cnpj_formatar(:cpfcnpj);
+
+            ender_completo = null;
+
+            select  end_id, end_logradouro, end_numero, end_complemento, end_bairro, end_cep, cidade_id, tp_ender_id, end_corresp, end_corresp_dev, statuscorresp, cidade_nome, estado_nome, tp_ender_descr
+            from proc_loc_endereco(:ass_id)
+            into :end_id, :end_logradouro, :end_numero, :end_complemento, :end_bairro, :end_cep, :cidade_id, :tp_ender_id, :end_corresp, :end_corresp_dev, :statuscorresp, :cidade_nome, :estado_nome, :tp_ender_descr;
+
+            if (:end_id is null) then
+               statuscorresp ='Sem Endereço Cadastrado';
+            else
+            begin
+               ender_completo = :end_logradouro;
+               if (:end_numero is not null) then
+                  ender_completo = :ender_completo ||','|| :end_numero ;
+               else
+                  end_numero='';
+
+               if (:end_complemento is not null) then
+                  ender_completo = :ender_completo ||' ' || :end_complemento;
+               else
+                 end_complemento ='';
+
+               if (:end_bairro is not null) then
+                  ender_completo = :ender_completo || ', ' ||:end_bairro;
+               else
+                  end_bairro = '';
+
+
+               if (:cidade_nome is not null) then
+                  ender_completo = :ender_completo||' - ' || :cidade_nome;
+               else
+                  cidade_nome = '';
+
+               if (:estado_nome is not null) then
+                  ender_completo = :ender_completo || ' / ' || estado_nome;
+               else
+                  estado_nome = '';
+
+               if (:end_cep is not null) then
+                  ender_completo = :ender_completo || ' CEP.' || :end_cep;
+               else
+                  end_cep = '';
+            end
+                Suspend;
+
+
+     end
+end^
+
+SET TERM ; ^
+
+GRANT EXECUTE ON PROCEDURE PROC_LOC_ENDERECO TO PROCEDURE PROC_RELAT_ASSOC_EMDIA;
+
+GRANT EXECUTE ON PROCEDURE PROC_RELAT_ASSOC_EMDIA TO SYSDBA;

@@ -1,0 +1,132 @@
+unit UTiposContato;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UnitModeloComum, WinSkinData, ExtCtrls, StdCtrls, Buttons,
+  Grids, DBGrids;
+
+type
+  TfrmTiposContato = class(TModeloComum)
+    Panel2: TPanel;
+    spNovo: TSpeedButton;
+    spEditar: TSpeedButton;
+    spExcluir: TSpeedButton;
+    DBGrid1: TDBGrid;
+    Label1: TLabel;
+    btSair: TBitBtn;
+    procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure btSairClick(Sender: TObject);
+    procedure spNovoClick(Sender: TObject);
+    procedure spEditarClick(Sender: TObject);
+    procedure spExcluirClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmTiposContato: TfrmTiposContato;
+
+implementation
+
+uses UDMGeral, UTipoContato, UFuncoes, SqlExpr;
+
+{$R *.dfm}
+
+procedure TfrmTiposContato.DBGrid1DrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+begin
+  inherited;
+ if  Tdbgrid(sender).DataSource.dataset.RecNo mod 2 = 1 then
+  begin
+    Tdbgrid(sender).Canvas.Brush.color := clwindow;
+    Tdbgrid(sender).DefaultDrawDataCell(Rect, Column.Field, State);
+  end
+  else
+  begin
+    Tdbgrid(sender).Canvas.Brush.Color := $00FFCECE;
+    Tdbgrid(sender).DefaultDrawDataCell(Rect, Column.Field, State);
+  end;
+
+  if gdselected in State then
+  begin
+    Tdbgrid(sender).Canvas.Brush.Color := clNavy;
+    Tdbgrid(sender).Canvas.Font.Color := clwhite;
+    Tdbgrid(sender).Canvas.FillRect(Rect);
+    Tdbgrid(sender).DefaultDrawDataCell(Rect, Column.Field, State);
+  end;
+
+
+end;
+
+procedure TfrmTiposContato.btSairClick(Sender: TObject);
+begin
+  inherited;
+  close;
+end;
+
+procedure TfrmTiposContato.spNovoClick(Sender: TObject);
+begin
+  inherited;
+  Try Application.CreateForm(TfrmTipoContato,frmTipoContato);
+  if frmTipoContato.showmodal = mrok then
+  begin
+      DMGeral.PROC_TIPO_CONTATO_UI.close;
+      DMGeral.PROC_TIPO_CONTATO_UI.ParamByName('TP_CONTATO').value :=0;
+      DMGeral.PROC_TIPO_CONTATO_UI.ParamByName('TP_CONTATO_DESC').value := frmTipoContato.editTipoContato.Text;
+      DMGeral.PROC_TIPO_CONTATO_UI.ExecProc;
+      DMGeral.dsTpoContato.Dataset.refresh;
+  end;
+  finally
+  frmTipoContato.free;
+  end;
+end;
+
+procedure TfrmTiposContato.spEditarClick(Sender: TObject);
+begin
+  inherited;
+  If DMGeral.dsTpoContato.DataSet.RecordCount >0 then
+  begin
+      Try Application.CreateForm(TfrmTipoContato,frmTipoContato);
+      frmTipoContato.Caption := '::: Tipo de Contato - Edição :::';
+      frmTipoContato.editTipoContato.Text := DMGeral.cdsTipoContatoTP_CONTATO_DESC.value;
+      if frmTipoContato.showmodal = mrok then
+      begin
+          DMGeral.PROC_TIPO_CONTATO_UI.close;
+          DMGeral.PROC_TIPO_CONTATO_UI.ParamByName('TP_CONTATO').value :=DMGeral.cdsTipoContatoTP_CONTATO.value;
+          DMGeral.PROC_TIPO_CONTATO_UI.ParamByName('TP_CONTATO_DESC').value := frmTipoContato.editTipoContato.Text;
+          DMGeral.PROC_TIPO_CONTATO_UI.ExecProc;
+          DMGeral.dsTpoContato.Dataset.refresh;
+      end;
+      finally
+      frmTipoContato.free;
+      end;
+  end;
+end;
+
+procedure TfrmTiposContato.spExcluirClick(Sender: TObject);
+begin
+  inherited;
+  If DMGeral.dsTpoContato.DataSet.RecordCount >0 then
+  begin
+      If Confirma('Deseja excluir o tipo de contato selecionado? ') then
+      begin
+          Try
+            DMGeral.PROC_TIPO_CONTATO_DEL.close;
+            DMGeral.PROC_TIPO_CONTATO_DEL.ParamByName('TP_CONTATO').value := DMGeral.cdsTipoContatoTP_CONTATO.value;
+            DMGeral.PROC_TIPO_CONTATO_DEL.ExecProc;
+          except
+            Erro('Erro ao excluir o tipo de contato.'+#13+'Provavelmente tem algum filiado relacionado. ');
+          end;
+          DMGeral.cdsTipoContato.Refresh;
+      end;
+  end;
+
+end;
+
+end.
