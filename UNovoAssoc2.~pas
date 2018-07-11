@@ -3155,6 +3155,12 @@ begin
      QRExtrato.labtotalsind.caption:= 'R$ ' + FormatCurr(',0.00',totsind);
      QRExtrato.labtotalconf.caption:= 'R$ ' + FormatCurr(',0.00',totconf);
 
+     QRExtrato.labtotalTotal.caption:= 'R$ ' + FormatCurr(',0.00',tottotal);
+     QRExtrato.labtotalValor.caption:= 'R$ ' + FormatCurr(',0.00',totvalor);
+     QRExtrato.labtotalJuros.caption:= 'R$ ' + FormatCurr(',0.00',totjuros);
+     QRExtrato.labtotalMulta.caption:= 'R$ ' + FormatCurr(',0.00',totmulta);
+     QRExtrato.labtotalCorrecao.caption:= 'R$ ' + FormatCurr(',0.00',totcorrecao);
+
  {    If totparcel = 0 then
      begin
        QRExtrato.QRLabel16.Caption:='';
@@ -3179,6 +3185,12 @@ begin
         QRExtrato.labjuros.DataField:='';
         QRExtrato.labcorrecao.DataField:='';
         QRExtrato.labMulta.DataField:='';
+         QRExtrato.labtotalTotal.caption:= ' ';
+         QRExtrato.labtotalValor.caption:= ' ' ;
+         QRExtrato.labtotalJuros.caption:= ' ' ;
+         QRExtrato.labtotalMulta.caption:= ' ';
+         QRExtrato.labtotalCorrecao.caption:= ' ' ;
+
      end;
 
    //  QRExtrato.labtotal.caption:='Total: R$ ' + formatfloat(',0.00', DmFinancas.sdsTotalExtratoTOTAL.asfloat);

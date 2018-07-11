@@ -62,6 +62,7 @@ type
     procedure UdparcsChanging(Sender: TObject; var AllowChange: Boolean);
     procedure CalculaParcs(totalparc:integer; dataprim:TDatetime; ValorTotal:real);
     procedure CalculaParcsNovo(forma:integer; dataprim:TDatetime; ValorTotal:real);
+     procedure CalculaParcsNovo2018(forma:integer; dataprim:TDatetime; ValorTotal:real);
     procedure BitBtn1Click(Sender: TObject);
     procedure edPrimVenctoChange(Sender: TObject);
     procedure BtnOKClick(Sender: TObject);
@@ -172,7 +173,7 @@ begin
 
   try
  // CalculaParcs(strtoint(edNumParc.text), strtodate(edPrimVencto.text), strtofloat(stringreplace(edValor.text,'.','',[rfreplaceall])));
-  CalculaParcsNovo(cbparcelas.ItemIndex+1, strtodate(edPrimVencto.text), 0);
+  CalculaParcsNovo2018(cbparcelas.ItemIndex+1, strtodate(edPrimVencto.text), 0);
 
   //Atualiza Parcelas
  { cdsAnuidadesParcs.First;
@@ -354,5 +355,64 @@ begin
      if Length(trim(edPrimVencto.text)) = 10 then
         BitBtn1.click;
 end;
+
+procedure TfrmParcelamentoNovoOpcoes.CalculaParcsNovo2018(forma: integer;
+  dataprim: TDatetime; ValorTotal: real);
+var
+  i,x:integer;
+  valorparc, valorPrimParc : real;
+  datavenc: TDatetime;
+  addmes:integer;
+  anuidid:integer;
+begin
+   datavenc := Dataprim;
+   cdsParcelas.EmptyDataSet;
+   cdsParcelas.Open;
+   i:=1;
+   x := forma;
+
+   //Adicionando o maior ano como sendo a primeira parcela
+   cdsAnuidadesParcs.IndexFieldNames:='ano';
+   cdsAnuidadesParcs.last;
+
+   cdsParcelas.Append;
+   cdsParcelas.Edit;
+   cdsParcelasValor.value := ValorTotal;
+   cdsParcelasVencimento.value := datavenc;
+   cdsParcelasNumParc.value := 1;
+   cdsParcelasParcela_descr.value := 'Exercício de '+ inttostr(cdsAnuidadesParcsano.value);
+   cdsParcelasanuid_id.value := cdsAnuidadesParcsanuid_id.value;
+   anuidid := cdsAnuidadesParcsanuid_id.value;
+   cdsParcelas.Post;
+
+   datavenc := IncMonth(Dataprim,x);
+   i:=i+1;
+   x:= x+forma;
+
+
+   cdsAnuidadesParcs.first;
+   while not cdsAnuidadesParcs.eof do
+   begin
+      if anuidid <> cdsAnuidadesParcsanuid_id.value then
+      begin
+        cdsParcelas.Append;
+        cdsParcelas.Edit;
+        cdsParcelasValor.value := ValorTotal;
+        cdsParcelasVencimento.value := datavenc;
+        cdsParcelasNumParc.value := i;
+        cdsParcelasParcela_descr.value := 'Exercício de '+ inttostr(cdsAnuidadesParcsano.value);
+        cdsParcelasanuid_id.value := cdsAnuidadesParcsanuid_id.value;
+        cdsParcelas.Post;
+        datavenc := IncMonth(Dataprim,x);
+        x:= x+forma;
+        i := i +1;
+      end;
+
+      cdsAnuidadesParcs.next;
+   end;
+
+
+end;
+
 
 end.

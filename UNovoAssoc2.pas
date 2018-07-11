@@ -2261,7 +2261,7 @@ begin
 
                //Definindo o Vencimento
                Try Application.CreateForm(TfrmBoletoVencimento,frmBoletoVencimento);
-               frmBoletoVencimento.edDataVencto.text := Datetostr(DataAtual);
+               frmBoletoVencimento.edDataVencto.text := Datetostr(DataAtual+1);
                if frmBoletoVencimento.showmodal = mrok then
                     Venc := strtodate(frmBoletoVencimento.edDataVencto.text)
                else
