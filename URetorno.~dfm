@@ -3008,8 +3008,8 @@ inherited frmRetorno: TfrmRetorno
   end
   object cdsRegistro: TSQLClientDataSet
     CommandText = 
-      '   select registro, nome, emp_id'#13#10'   from proc_assoc_boleto(:nos' +
-      'sonumero)'
+      '   select registro, nome, emp_id, CPFCNPJ'#13#10'   from proc_assoc_bo' +
+      'leto(:nossonumero)'
     Aggregates = <>
     Options = [poAllowCommandText]
     ObjectView = True
@@ -3031,6 +3031,9 @@ inherited frmRetorno: TfrmRetorno
     end
     object cdsRegistroEMP_ID: TIntegerField
       FieldName = 'EMP_ID'
+    end
+    object cdsRegistroCPFCNPJ: TStringField
+      FieldName = 'CPFCNPJ'
     end
   end
   object PopupMarc: TPopupMenu

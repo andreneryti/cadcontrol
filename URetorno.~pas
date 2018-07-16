@@ -65,6 +65,7 @@ type
     cdsResultadoSituacao: TStringField;
     cdsTituloscpfcnpj: TStringField;
     cdsTitulosseunumero: TStringField;
+    cdsRegistroCPFCNPJ: TStringField;
     procedure spNovoClick(Sender: TObject);
     procedure btSairClick(Sender: TObject);
     procedure RetornoSindical;
@@ -648,7 +649,8 @@ begin
                  If Copy(Retorno.Strings[Linha],75,8) <> '00000000' then
                     cdsTitulosDataVencimento.value := strtodate(Copy(Retorno.Strings[Linha],75,2)+'/'+Copy(Retorno.Strings[Linha],77,2)+'/'+Copy(Retorno.Strings[Linha],79,4));
 
-                 cdsTitulosNossoNumero.value := Copy(Retorno.Strings[Linha],41,17);
+                // cdsTitulosNossoNumero.value := Copy(Retorno.Strings[Linha],41,17);
+                 cdsTitulosNossoNumero.value :='14'+ Copy(Retorno.Strings[Linha],107,15);
                  if Copy(Retorno.Strings[Linha],134,1) = '1' then
                      //cdsTituloscpfcnpj.value := Copy(Retorno.Strings[Linha],137,3)+'.'+Copy(Retorno.Strings[Linha],140,3)+'.'+ Copy(Retorno.Strings[Linha],143,3)+'-'+;
                      cdsTituloscpfcnpj.value := FormatMaskText('000\.000\.000\-00;0;', Copy(Retorno.Strings[Linha],139,11))
@@ -668,6 +670,7 @@ begin
                     cdsTitulosNome.AsString := cdsRegistro.FieldByNAME('NOME').AsString;
                     cdsTitulosRegistro.AsString := cdsRegistro.FieldByNAME('REGISTRO').AsString;
                     cdsTitulosemp_id.value :=cdsRegistroemp_id.value;
+                    cdsTituloscpfcnpj.value := cdsRegistro.FieldByNAME('CPFCNPJ').AsString; 
                  end
                  else
                  begin
@@ -695,7 +698,7 @@ begin
             begin
                 oper:= Copy(Retorno.Strings[LINHA],86,1);
 
-                if oper = 'D' then
+                if (oper = 'D') then
                 begin
 
                    If Copy(Retorno.Strings[Linha],155,8) <> '00000000' then
