@@ -42,6 +42,8 @@ type
     procedure btGravarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure edCpfCnpjExit(Sender: TObject);
+    procedure edRegistroKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -120,6 +122,48 @@ procedure TfrmNovoRelacionamento.edCpfCnpjExit(Sender: TObject);
 begin
   inherited;
   edCpfCnpj.text := MaskCPFCGC(edCpfCnpj.text);
+end;
+
+procedure TfrmNovoRelacionamento.edRegistroKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+var
+   i:integer;
+begin
+  inherited;
+  if Key = VK_DIVIDE then
+  begin
+    I    := Pos('/', edRegistro.EditMask) - 1;
+    edRegistro.Text := Char_Left(Trim(Copy(edRegistro.Text, 1, i)), i, '0') + Copy(edRegistro.Text, 8, 4)
+  end;
+
+  if Key = 13 then
+  begin
+      I    := Pos('/', edRegistro.EditMask) - 1;
+      edRegistro.Text := Char_Left(Trim(Copy(edRegistro.Text, 1, i)), i, '0') + Copy(edRegistro.Text, 8, 4);
+
+
+      Try Application.createform(TfrmBuscaAssoc,frmBuscaAssoc);
+          frmBuscaAssoc.edRegistro.Text := edRegistro.Text;
+          frmBuscaAssoc.btLocalizarClick(sender);
+          if DMAssociado.dsLocAssoc.dataset.RecordCount >0 then
+          begin
+             DMAssociado.dsRelac.dataset.edit;
+             if DMAssociado.cdsAssocTP_ASSOC_ID.value = 1 then
+                DMAssociado.cdsRelacASS_IDFILHO.value := DMAssociado.cdsLocAssocASS_ID.value
+             else
+             if DMAssociado.cdsAssocTP_ASSOC_ID.value = 2 then
+                DMAssociado.cdsRelacASS_IDPAI.value := DMAssociado.cdsLocAssocASS_ID.value;
+
+             DMAssociado.cdsRelacCPFSOCIO.value := StringReplace(StringReplace(StringReplace(DMAssociado.cdsLocAssocCPFCNPJASSOC.value,'.','',[rfreplaceall]),'/','',[rfreplaceall]),'-','',[rfreplaceall]);
+             edCpfCnpjExit(sender);
+             DMAssociado.cdsRelacNOMESOCIO.value :=DMAssociado.cdsLocAssocNOMEASSOC.value;
+             edRegistro.Text:= StringReplace(DMAssociado.cdsLocAssocREGASSOC.value,'/','',[rfreplaceall]);
+          end;
+      finally
+          frmBuscaAssoc.free;
+      end;
+  end;
+
 end;
 
 end.

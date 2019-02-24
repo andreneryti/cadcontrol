@@ -88,6 +88,10 @@ type
     RepassedePagamentos1: TMenuItem;
     SkinData1: TSkinData;
     Remessa1: TMenuItem;
+    N17: TMenuItem;
+    LogdeEnviodeRemessa1: TMenuItem;
+    ArquivodePrCrtica1: TMenuItem;
+    N18: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure spCadAssocClick(Sender: TObject);
@@ -126,6 +130,8 @@ type
     procedure RepassedePagamentos1Click(Sender: TObject);
     procedure Remessa1Click(Sender: TObject);
     procedure ExtratoNovoRegistroNova1Click(Sender: TObject);
+    procedure LogdeEnviodeRemessa1Click(Sender: TObject);
+    procedure ArquivodePrCrtica1Click(Sender: TObject);
     private
         //  FileInfo: TJclFileVersionInfo;
             { Private declarations }
@@ -147,7 +153,8 @@ uses UFuncoes, UnitLocAssoc, UDMConexao, UDemonstrativo, UDatadoSistema,
     URelatMovimentoPeriodo, UfrmMalaDiretaCadastro, USimulacaoGuia,
   URelatRecebimentos, URelatGuiasNaoIdent, URelatMovimento,
   URelatSimplesNacional, URelatAtendimentos, Ulotes, ULotesControle,
-  ULotesRelatRepasse, URemessa, UDemonstrativoNovo, UNovoAssoc2;
+  ULotesRelatRepasse, URemessa, UDemonstrativoNovo, UNovoAssoc2,
+  ULogRemessa;
 
 
 {$R *.dfm}
@@ -461,9 +468,9 @@ end;
 
 procedure TfrmPrincipal.FormDestroy(Sender: TObject);
 begin
-    DeleteDirectory(ExtractFilePath(Application.ExeName) + 'email', false);
+//    DeleteDirectory(ExtractFilePath(Application.ExeName) + 'email', false);
     // CreateDir(ExtractFilePath(Application.ExeName) +'email');
-    DeleteDirectory(ExtractFilePath(Application.ExeName) + 'anexos', false);
+//    DeleteDirectory(ExtractFilePath(Application.ExeName) + 'anexos', false);
     // CreateDir(ExtractFilePath(Application.ExeName) +'anexos');
 end;
 
@@ -579,6 +586,26 @@ begin
      finally
             frmDemonstrativoNovo.free;
      end; }
+
+end;
+
+procedure TfrmPrincipal.LogdeEnviodeRemessa1Click(Sender: TObject);
+begin
+    try application.CreateForm(TfrmLogRemessa, frmLogRemessa);
+        frmLogRemessa.showmodal;
+    finally
+        frmLogRemessa.free;
+    end;
+
+end;
+
+procedure TfrmPrincipal.ArquivodePrCrtica1Click(Sender: TObject);
+begin
+    try application.CreateForm(TfrmLerPreCritica, frmLerPreCritica);
+        frmLerPreCritica.showmodal;
+    finally
+        frmLerPreCritica.free;
+    end;
 
 end;
 

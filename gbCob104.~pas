@@ -4,8 +4,7 @@ interface
 
 uses
    classes, SysUtils, gbCobranca
-     , Variants, MaskUtils, contnrs, DateUtils
-  ;
+     , Variants, MaskUtils, contnrs, DateUtils, JvDateUtil  ;
    
 
 const
@@ -41,6 +40,8 @@ type
 
 
 implementation
+
+uses UFuncoes, UDMConexao;
 
 
 function TgbBanco104.GetNomeBanco : string;
@@ -2044,7 +2045,7 @@ begin
         Registro := Registro + '0'+Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 5, false, '0'); {59 a 64 - Código dom cedente no banco}
         Registro := Registro + '00000000'; // 65 a 72 - Uso Exclusivo CAIXA
 
-        Registro := Registro + copy(Titulos[NumeroRegistro].Cedente.Nome,1,30); {73 a 102 - Nome do cedente}
+        Registro := Registro + RemoveAcento(copy(Titulos[NumeroRegistro].Cedente.Nome,1, 30)); {73 a 102 - Nome do cedente}
         Registro := Registro + Formatar('CAIXA ECONOMICA FEDERAL', 30, true, ' '); {103 a 132 - Nome do banco}
         Registro := Registro + Formatar(' ', 10); {133 a 142 - Uso exclusivo FEBRABAN/CNAB}
         Registro := Registro + '1'; {143 - Código de Remessa (1) / Retorno (2)}
@@ -2088,7 +2089,7 @@ begin
         Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 6, false, '0'); {60 a 65 - Código do Convênio no Banco}
         Registro := Registro + '0000000'; {66 a 72 - Código do Modelo Personalizado}
         Registro := Registro + Formatar('0', 1); {73 - Uso Exclusivo CAIXA}
-        Registro := Registro + copy(Titulos[NumeroRegistro].Cedente.Nome,1, 30); {74 a 103 - Nome do cedente}
+        Registro := Registro + RemoveAcento(copy(Titulos[NumeroRegistro].Cedente.Nome,1, 30)); {74 a 103 - Nome do cedente}
 
         //Registro := Registro + Formatar(Titulos[NumeroRegistro].Instrucoes.Strings[0], 40, True, ' '); {104 a 143 - Mensagem 1 para todos os boletos do lote}
         //Registro := Registro + Formatar(Titulos[NumeroRegistro].Instrucoes.Strings[1], 40, True, ' '); {144 a 183 - Mensagem 2 para todos os boletos do lote}
@@ -2348,7 +2349,7 @@ begin
         Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 6, false, '0'); {59 a 64 - Código dom cedente no banco}
         Registro := Registro + '00000000'; // 65 a 72 - Uso Exclusivo CAIXA
 
-        Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.Nome, 30, true, ' '); {73 a 102 - Nome do cedente}
+        Registro := Registro + RemoveAcento(copy(Titulos[NumeroRegistro].Cedente.Nome,1, 30)); {73 a 102 - Nome do cedente}
         Registro := Registro + Formatar('CAIXA ECONOMICA FEDERAL', 30, true, ' '); {103 a 132 - Nome do banco}
         Registro := Registro + Formatar(' ', 10); {133 a 142 - Uso exclusivo FEBRABAN/CNAB}
         Registro := Registro + '1'; {143 - Código de Remessa (1) / Retorno (2)}
@@ -2392,7 +2393,7 @@ begin
         Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 6, false, '0'); {60 a 65 - Código do Convênio no Banco}
         Registro := Registro + '0000000'; {66 a 72 - Código do Modelo Personalizado}
         Registro := Registro + Formatar('0', 1); {73 - Uso Exclusivo CAIXA}
-        Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.Nome, 30, true, ' '); {74 a 103 - Nome do cedente}
+        Registro := Registro + RemoveAcento(copy(Titulos[NumeroRegistro].Cedente.Nome,1, 30)); {74 a 103 - Nome do cedente}
 
         //Registro := Registro + Formatar(Titulos[NumeroRegistro].Instrucoes.Strings[0], 40, True, ' '); {104 a 143 - Mensagem 1 para todos os boletos do lote}
         //Registro := Registro + Formatar(Titulos[NumeroRegistro].Instrucoes.Strings[1], 40, True, ' '); {144 a 183 - Mensagem 2 para todos os boletos do lote}
@@ -2730,7 +2731,7 @@ begin
         Registro := Registro + '0000000'; // 66 a 72 - Uso Exclusivo CAIXA
         Registro := Registro + '0'; // 73 - Uso Exclusivo CAIXA
 
-        Registro := Registro + Copy(Titulos[NumeroRegistro].Cedente.Nome, 1,30); {74 a 103 - Nome do cedente}
+        Registro := Registro + RemoveAcento(copy(Titulos[NumeroRegistro].Cedente.Nome,1, 30)); {74 a 103 - Nome do cedente}
         Registro := Registro + Formatar('CAIXA ECONOMICA FEDERAL', 30, true, ' '); {104 a 133 - Nome do banco}
         Registro := Registro + Formatar(' ', 10); {134 a 143 - Uso exclusivo FEBRABAN/CNAB}
         Registro := Registro + '1'; {144 - Código de Remessa (1) / Retorno (2)}
@@ -2783,7 +2784,8 @@ begin
         Registro := Registro + '000000000000000'; {40 a 54 - Uso exclusivo CAIXA}
         Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.ContaBancaria.CodigoAgencia, 5, false, '0'); {55 a 59 - Código da agência do cedente}
         Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.ContaBancaria.DigitoAgencia, 1, false, '0'); {60 - Dígito da agência do cedente}
-        Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 7, true, '0'); {61 a 67 - Código do Convênio no Banco}
+        Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 7, false, '0'); {61 a 67 - Código do Convênio no Banco}
+       // Registro := Registro +'0'+ Titulos[NumeroRegistro].Cedente.CodigoCedente; {61 a 67 - Código do Convênio no Banco}
 
         if Titulos[NumeroRegistro].Cedente.CodigoCedente = '109067' then
             Registro := Registro + '2' {68 - Tipo de Entidade}
@@ -2802,7 +2804,7 @@ begin
          if Titulos[NumeroRegistro].Cedente.CodigoCedente = '103911' then
                 Registro := Registro + '87231';{217 1 221 0 cod sindical}
         Registro := Registro + '00'; {74 a 75 - Uso da Caixa}
-        Registro := Registro + Copy(Titulos[NumeroRegistro].Cedente.Nome, 1,30); {76 a 105 - Nome do cedente}
+        Registro := Registro + RemoveAcento(copy(Titulos[NumeroRegistro].Cedente.Nome,1, 30)); {76 a 105 - Nome do cedente}
         Registro := Registro + Formatar(' ', 40, True, ' '); {106 a 145 - Mensagem 1 para todos os boletos do lote}
         Registro := Registro + Formatar(' ', 40, True, ' '); {146 a 185 - Mensagem 2 para todos os boletos do lote}
         Registro := Registro + Formatar(IntToStr(NumeroArquivo), 12, false, '0'); {186 a 197 - Número do arquivo}
@@ -2854,17 +2856,21 @@ begin
             end; {case Titulos[NumeroRegistro].TipoOcorrencia}
             Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.ContaBancaria.CodigoAgencia, 5, false, '0'); {18 a 22 - Agência mantenedora da conta}
             Registro := Registro + Formatar(Titulos[NumeroRegistro].Cedente.ContaBancaria.DigitoAgencia, 1, false, '0'); {23 - Dígito verificador da agência}
-            Registro := Registro +Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 7, true, '0'); {24 a 30 - Código do Convênio no Banco}
+            Registro := Registro +Formatar(Titulos[NumeroRegistro].Cedente.CodigoCedente, 7, false, '0'); {24 a 30 - Código do Convênio no Banco}
+            //Registro := Registro +'0'+Titulos[NumeroRegistro].Cedente.CodigoCedente; {24 a 30 - Código do Convênio no Banco}
             Registro := Registro + '0000000'; {31 a 37 - Uso Exclusivo da CAIXA}
             Registro := Registro + '000'; {38 a 40 - Uso Exclusivo da CAIXA}
-            Registro := Registro + Titulos[NumeroRegistro].NossoNumero; {41 a 57 - modalidade da carteira (14) + Nosso número - identificação do título no banco}
+            //Registro := Registro + Titulos[NumeroRegistro].NossoNumero; {41 a 57 - modalidade da carteira (14) + Nosso número - identificação do título no banco}
+            Registro := Registro + '00000000000000000'; {41 a 57 - modalidade da carteira (14) + Nosso número - identificação do título no banco}
             Registro := Registro + '1'; {58 - Cobrança Simples}
             Registro := Registro + '1'; {59 - Forma de cadastramento do título no banco: com cadastramento}
             Registro := Registro + '2'; {60 - Tipo de documento: Escritural}
 
             Registro := Registro + '2' + '0';    // 2 para Cliente e 0 para Cliente Distribiui
 
-            Registro := Registro + Titulos[NumeroRegistro].SeuNumero; {63 a 73 - Número que identifica o título na empresa}
+            //Registro := Registro + Titulos[NumeroRegistro].SeuNumero; {63 a 73 - Número que identifica o título na empresa}
+
+            Registro := Registro + Formatar(IntToStr(ExtractMonth(Titulos[NumeroRegistro].DataVencimento))+'/'+ IntToStr(ExtractYear(DataAtual)),11,'0');  ; {63 a 73 - Número que identifica o título na empresa}
 
             Registro := Registro + '    '; {74 a 77 - Uso exclusivo CAIXA: Brancos}
             Registro := Registro + FormatDateTime('ddmmyyyy', Titulos[NumeroRegistro].DataVencimento); {78 a 85 - Data de vencimento do título}
@@ -2914,7 +2920,8 @@ begin
 
             Registro := Registro + '0000000000'; {230 a 239 - Uso exclusivo Caixa}
 
-            Registro := Registro + ' '; {240 - Uso exclusivo FEBRABAN/CNAB}
+            //Registro := Registro + ' '; {240 - Uso exclusivo FEBRABAN/CNAB}
+            Registro := Registro + '1'; {240 - valor fixo e nao autoriza pagto parcial}
 
             Remessa.Add(Registro);
             Registro := '';
@@ -2962,7 +2969,9 @@ begin
             Registro := Registro + Formatar('0', 9, false, '0');  // num empregados contribuintes
             Registro := Registro + Formatar('0', 13, false, '0'); // total de remuneração  contribuintes
             Registro := Registro + Formatar('0', 9, false, '0');  // Total de empregados do estabelecimento
-            Registro := Registro + Formatar('0', 5, false, '0'); // codigo cnae
+            //Registro := Registro + Formatar('0', 5, false, '0'); // codigo cnae
+            Registro := Registro + '00461'; // codigo cnae
+
             if Titulos[NumeroRegistro].Cedente.Nome[1]='S' then
                 Registro := Registro + '1'   {216 - Tipo de Entidade}
 

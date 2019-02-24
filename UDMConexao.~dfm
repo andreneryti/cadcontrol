@@ -1,7 +1,7 @@
 object DMConexao: TDMConexao
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Left = 476
+  Left = 478
   Top = 413
   Height = 322
   Width = 448

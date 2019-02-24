@@ -308,6 +308,8 @@ var
 
 implementation
 
+uses UDMConexao;
+
 {$R *.DFM}
 
 procedure TImp_GRCS_CR.qrlDesconto1Print(sender: TObject; var Value: String);

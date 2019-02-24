@@ -1285,7 +1285,8 @@ begin
 
       qrlContrtibuinte1.Caption := MaskCPFCGC(Sacado.Contribuintecpfcnpj);
 
-      qrlContrtibuinte2.Caption := Sacado.Contribuinte ;
+
+      qrlContrtibuinte2.Caption := Sacado.Contribuinte +'-'+Modulo11(Sacado.Contribuinte);
       qrlContrtibuinte3.Caption := qrlContrtibuinte2.Caption;
 
       qrlValor1.Caption      := FormatCurr('#,##0.00',Valores.Contribuicao);
@@ -1413,8 +1414,8 @@ begin
       begin
           Aviso('Erro ao salvar arquivo PDF. ');
           Exit;
-      end
-      else
+      end;
+{      else
       begin
            DMAssociado.PROC_NOTIFIC_I.close;
            DMAssociado.PROC_NOTIFIC_I.ParamByName('TPNOTIF_ID').value := 4;
@@ -1426,7 +1427,7 @@ begin
            DMAssociado.PROC_NOTIFIC_I.ExecProc;
            DMAssociado.dsDocsAnexos.dataset.close;
            DMAssociado.dsDocsAnexos.dataset.open;
-      end;
+      end;    }
 
       ABoleto.Print;
       ABoleto.Free;
@@ -1450,14 +1451,14 @@ begin
           Aviso('Erro ao salvar arquivo PDF. ');
           Exit;
       end;
-       DMAssociado.PROC_NOTIFIC_I.close;
+      { DMAssociado.PROC_NOTIFIC_I.close;
        DMAssociado.PROC_NOTIFIC_I.ParamByName('TPNOTIF_ID').value := 4;
        DMAssociado.PROC_NOTIFIC_I.ParamByName('DATAEMISSAO').value := DataAtual;
        DMAssociado.PROC_NOTIFIC_I.ParamByName('CAMINHO').value :=  nomearquivo+'.pdf';
        DMAssociado.PROC_NOTIFIC_I.ParamByName('IDUSER').value := UserId;
        DMAssociado.PROC_NOTIFIC_I.ParamByName('DATAINCLUSAO').value :=  DataAtual;
        DMAssociado.PROC_NOTIFIC_I.ParamByName('ass_id').value :=  DMAssociado.cdsAssocASS_ID.value;
-       DMAssociado.PROC_NOTIFIC_I.ExecProc;
+       DMAssociado.PROC_NOTIFIC_I.ExecProc;    }
       ABoleto.preview;
       ABoleto.Free;
    EXCEPT

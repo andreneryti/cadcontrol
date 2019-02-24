@@ -191,6 +191,8 @@ type
     QRShape35: TQRShape;
     QRShape36: TQRShape;
     QRShape37: TQRShape;
+    QRLabel32: TQRLabel;
+    QRLabel33: TQRLabel;
         procedure QRLabel13Print(sender: TObject; var Value: string);
         procedure QRLabel31Print(sender: TObject; var Value: string);
     private

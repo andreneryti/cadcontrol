@@ -670,7 +670,7 @@ begin
                     cdsTitulosNome.AsString := cdsRegistro.FieldByNAME('NOME').AsString;
                     cdsTitulosRegistro.AsString := cdsRegistro.FieldByNAME('REGISTRO').AsString;
                     cdsTitulosemp_id.value :=cdsRegistroemp_id.value;
-                    cdsTituloscpfcnpj.value := cdsRegistro.FieldByNAME('CPFCNPJ').AsString; 
+                    cdsTituloscpfcnpj.value := MaskCPFCGC( cdsRegistro.FieldByNAME('CPFCNPJ').AsString); 
                  end
                  else
                  begin

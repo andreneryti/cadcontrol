@@ -1,6 +1,6 @@
 inherited frmRetorno: TfrmRetorno
-  Left = 294
-  Top = 11
+  Left = 475
+  Top = 178
   ActiveControl = Grid1
   Caption = '::: Leitura de Arquivo de Retorno :::'
   ClientHeight = 685

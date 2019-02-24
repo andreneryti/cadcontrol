@@ -144,7 +144,9 @@ uses
   UDemonstrativoNovo in 'UDemonstrativoNovo.pas' {frmDemonstrativoNovo},
   uImp_GRCS_CR in 'uImp_GRCS_CR.pas' {Imp_GRCS_CR: TQuickRep},
   UNovoAssoc in 'UNovoAssoc.pas' {frmNovoAssoc},
-  UNovoAssoc2 in 'UNovoAssoc2.pas' {frmNovoAssoc2};
+  UNovoAssoc2 in 'UNovoAssoc2.pas' {frmNovoAssoc2},
+  ULogRemessa in 'ULogRemessa.pas' {frmLogRemessa},
+  ULerPreCritica in 'ULerPreCritica.pas' {frmLerPreCritica};
 
 {$R *.res}
 

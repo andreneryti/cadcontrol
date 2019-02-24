@@ -1285,7 +1285,8 @@ begin
 
       qrlContrtibuinte1.Caption := MaskCPFCGC(Sacado.Contribuintecpfcnpj);
 
-      qrlContrtibuinte2.Caption := Sacado.Contribuinte ;
+
+      qrlContrtibuinte2.Caption := Sacado.Contribuinte +'-'+Modulo11COMZERO(Sacado.Contribuinte);
       qrlContrtibuinte3.Caption := qrlContrtibuinte2.Caption;
 
       qrlValor1.Caption      := FormatCurr('#,##0.00',Valores.Contribuicao);

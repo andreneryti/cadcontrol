@@ -1607,6 +1607,9 @@ object frmPrincipal: TfrmPrincipal
         Caption = 'Situa'#231#227'o - &Boleto / Guia'
         OnClick = BoletoRecibo1Click
       end
+      object N17: TMenuItem
+        Caption = '-'
+      end
       object LeituradeRetorno1: TMenuItem
         Caption = 'Retorno'
         OnClick = LeituradeRetorno1Click
@@ -1614,6 +1617,17 @@ object frmPrincipal: TfrmPrincipal
       object Remessa1: TMenuItem
         Caption = 'Remessa'
         OnClick = Remessa1Click
+      end
+      object N18: TMenuItem
+        Caption = '-'
+      end
+      object LogdeEnviodeRemessa1: TMenuItem
+        Caption = 'Log de Envio de Remessa'
+        OnClick = LogdeEnviodeRemessa1Click
+      end
+      object ArquivodePrCrtica1: TMenuItem
+        Caption = 'Arquivo de Pr'#233'-Cr'#237'tica'
+        OnClick = ArquivodePrCrtica1Click
       end
       object N3: TMenuItem
         Caption = '-'

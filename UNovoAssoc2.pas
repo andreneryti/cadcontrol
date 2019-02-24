@@ -573,6 +573,19 @@ begin
       DmFinancas.cdsParcelasParc.Close;
       DmFinancas.cdsParcelasParc.Params.ParamByName('p_id').value := DmFinancas.cdsParcelamentoPARCEL_ID.value;
       DmFinancas.cdsParcelasParc.Open;
+      DmFinancas.cdsParcelasParc.first;
+
+
+      DmFinancas.cdsParcelamento.first;
+      while not DmFinancas.cdsParcelamento.eof do
+      begin
+          if DmFinancas.cdsParcelamentoTP_STATUS_DESCR.value='Ativo' then
+          begin
+              if DmFinancas.cdsParcelasParc.Locate('VALOR_PAGO',null,[]) then
+                  Break;
+          end;
+          DmFinancas.cdsParcelamento.next;
+      end;
 
       //Anuidades Parceladas
       Dmfinancas.cdsParcelAnuidades.close;

@@ -66,7 +66,7 @@ AutoIncBuild=1
 MajorVer=2
 MinorVer=0
 Release=0
-Build=34
+Build=41
 Debug=1
 PreRelease=0
 Special=0
@@ -77,7 +77,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=CadControl - Sistema de Cadastro (SINDICATO)
-FileVersion=2.0.0.34
+FileVersion=2.0.0.41
 InternalName=
 LegalCopyright=
 LegalTrademarks=
